@@ -1,0 +1,6 @@
+{
+  "name": "eslint-plugin-require-explicit-generics",
+  "description": "Force configured functions to include explicit generics",
+  "version": "0.1.0",
+  "main": "index.js"
+}
