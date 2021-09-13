@@ -2,5 +2,10 @@
   "name": "eslint-plugin-require-explicit-generics",
   "description": "Force configured functions to include explicit generics",
   "version": "0.1.0",
-  "main": "index.js"
+  "main": "index.js",
+  "homepage": "https://github.com/mattorchard/eslint-plugin-require-explicit-generics",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mattorchard/eslint-plugin-require-explicit-generics.git"
+  }
 }
