@@ -9,8 +9,8 @@ this plugin allows you to specify a list of functions that **MUST** have explici
 ## Example
 If you list `myFunction` in your `.eslintrc.js`:
 ```ts
-myFunction(); // ❌ ESLint: Function 'myFunction' called without explicit generics...
-myFunction<SomeType>(); // ✔ ESLint: Pass
+myFunction(); // ❌ ESLint: Function 'myFunction' must be called with explicit generics...
+myFunction<SomeType>(); // ✅ ESLint: Pass
 ```
 
 ## Installation
@@ -36,22 +36,27 @@ plugins: [
   "require-explicit-generics",
 ],
 ```
-Then in the rules section set `"require-explicit-generics/require-explicit-generics"` to an array,
-with the first value being a log-level (either `"error"` or `"warning"`)
-and all other values being functions that should be checked.
+Then in the rules section set `"require-explicit-generics/require-explicit-generics"`
+pass the log level  (either `"error"` or `"warning"`),
+then the list of functions to check.
 ```js
 rules: {
   "require-explicit-generics/require-explicit-generics": [
-    // Log level
     "error",
     // List your functions here
-    "myFunction",
-    "myOtherFunction"
+    [ "myFunction", "myOtherFunction" ]
   ]
 },
 ```
-
-If you omit this configuration running eslint will warn:
-```shell
-require-explicit-generics was given no method names to check and will not produce any warnings
+You can also use a map to define how many generics to expect for each function.
+```js
+rules: {
+  "require-explicit-generics/require-explicit-generics": [
+    "error",
+    { "myFunction": 1, "myOtherFunction": 2 }
+  ]
+},
+```
+```ts
+myOtherFunction<TypeA>(); // Function 'myOtherFunction' called with too few explicit generics...
 ```
