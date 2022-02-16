@@ -43,6 +43,37 @@ function getExampleGenerics(count) {
   return values.join(", ");
 }
 
+function assertThatNodeHasExpectedGenerics(context, node) {
+  const expectedCountMap = createExpectedCountMap(context.options[0]);
+
+  const name = node.callee.name;
+  const expectedCount = expectedCountMap[name];
+  if (!expectedCount) return;
+
+  const actualCount = getParamsLength(node.typeParameters) || getParamsLength(node.typeArguments) || 0;
+  const generics = getExampleGenerics(expectedCount);
+  if (actualCount === 0) {
+    context.report({
+      node: node.callee,
+      message:
+          "Function or constuctor '{{name}}' must be called with explicit generics. " +
+          "Replace with '{{name}}<{{generics}}>(...)' to fix this.",
+      data: {name, generics}
+    });
+  } else if (
+      actualCount < expectedCount
+  ) {
+    context.report({
+      node: node.callee,
+      message:
+          "Function or constructor '{{name}}' called with too few explicit generics. " +
+          "Received {{actualCount}}, expected {{expectedCount}}. " +
+          "Replace with '{{name}}<{{generics}}>(...)' to fix this.",
+      data: {name, generics, expectedCount, actualCount}
+    });
+  }
+}
+
 const rules = {
   "require-explicit-generics": {
     meta: {
@@ -54,36 +85,12 @@ const rules = {
         return {};
       }
 
-      const expectedCountMap = createExpectedCountMap(context.options[0]);
-
       return {
+        NewExpression: (node) => {
+          assertThatNodeHasExpectedGenerics(context, node);
+        },
         CallExpression(node) {
-          const functionName = node.callee.name;
-          const expectedCount = expectedCountMap[functionName];
-          if (!expectedCount) return;
-
-          const actualCount = getParamsLength(node.typeParameters) || getParamsLength(node.typeArguments) || 0;
-          const generics = getExampleGenerics(expectedCount);
-          if (actualCount === 0) {
-            context.report({
-              node: node.callee,
-              message:
-                "Function '{{functionName}}' must be called with explicit generics. " +
-                "Replace with '{{functionName}}<{{generics}}>(...)' to fix this.",
-              data: {functionName, generics}
-            });
-          } else if (
-            actualCount < expectedCount
-          ) {
-            context.report({
-              node: node.callee,
-              message:
-                "Function '{{functionName}}' called with too few explicit generics. " +
-                "Received {{actualCount}}, expected {{expectedCount}}. " +
-                "Replace with '{{functionName}}<{{generics}}>(...)' to fix this.",
-              data: {functionName, generics, expectedCount, actualCount}
-            });
-          }
+          assertThatNodeHasExpectedGenerics(context, node);
         }
       };
     },
