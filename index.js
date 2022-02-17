@@ -43,7 +43,7 @@ function getExampleGenerics(count) {
   return values.join(", ");
 }
 
-function assertThatNodeHasExpectedGenerics(context, node) {
+function assertThatNodeHasExpectedGenerics(context, node, nodeType) {
   const expectedCountMap = createExpectedCountMap(context.options[0]);
 
   const name = node.callee.name;
@@ -56,9 +56,9 @@ function assertThatNodeHasExpectedGenerics(context, node) {
     context.report({
       node: node.callee,
       message:
-          "Function or constuctor '{{name}}' must be called with explicit generics. " +
+          "{{nodeType}} '{{name}}' must be called with explicit generics. " +
           "Replace with '{{name}}<{{generics}}>(...)' to fix this.",
-      data: {name, generics}
+      data: {name, generics, nodeType}
     });
   } else if (
       actualCount < expectedCount
@@ -66,10 +66,10 @@ function assertThatNodeHasExpectedGenerics(context, node) {
     context.report({
       node: node.callee,
       message:
-          "Function or constructor '{{name}}' called with too few explicit generics. " +
+          "{{nodeType}} '{{name}}' called with too few explicit generics. " +
           "Received {{actualCount}}, expected {{expectedCount}}. " +
           "Replace with '{{name}}<{{generics}}>(...)' to fix this.",
-      data: {name, generics, expectedCount, actualCount}
+      data: {name, generics, expectedCount, actualCount, nodeType}
     });
   }
 }
@@ -87,10 +87,10 @@ const rules = {
 
       return {
         NewExpression: (node) => {
-          assertThatNodeHasExpectedGenerics(context, node);
+          assertThatNodeHasExpectedGenerics(context, node, "Constructor");
         },
         CallExpression(node) {
-          assertThatNodeHasExpectedGenerics(context, node);
+          assertThatNodeHasExpectedGenerics(context, node, "Function");
         }
       };
     },
