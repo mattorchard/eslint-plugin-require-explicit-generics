@@ -43,33 +43,30 @@ function getExampleGenerics(count) {
   return values.join(", ");
 }
 
-function assertThatNodeHasExpectedGenerics(context, node, nodeType) {
-  const expectedCountMap = createExpectedCountMap(context.options[0]);
-
+function assertThatNodeHasExpectedGenerics({ context, expectedCountMap, node, nodeType }) {
   const name = node.callee.name;
   const expectedCount = expectedCountMap[name];
   if (!expectedCount) return;
 
   const actualCount = getParamsLength(node.typeParameters) || getParamsLength(node.typeArguments) || 0;
+
   const generics = getExampleGenerics(expectedCount);
   if (actualCount === 0) {
     context.report({
       node: node.callee,
       message:
-          "{{nodeType}} '{{name}}' must be called with explicit generics. " +
-          "Replace with '{{name}}<{{generics}}>(...)' to fix this.",
-      data: {name, generics, nodeType}
+        "{{nodeType}} '{{name}}' must be called with explicit generics. " +
+        "Replace with '{{name}}<{{generics}}>(...)' to fix this.",
+      data: { name, generics, nodeType }
     });
-  } else if (
-      actualCount < expectedCount
-  ) {
+  } else if (actualCount < expectedCount) {
     context.report({
       node: node.callee,
       message:
-          "{{nodeType}} '{{name}}' called with too few explicit generics. " +
-          "Received {{actualCount}}, expected {{expectedCount}}. " +
-          "Replace with '{{name}}<{{generics}}>(...)' to fix this.",
-      data: {name, generics, expectedCount, actualCount, nodeType}
+        "{{nodeType}} '{{name}}' called with too few explicit generics. " +
+        "Received {{actualCount}}, expected {{expectedCount}}. " +
+        "Replace with '{{name}}<{{generics}}>(...)' to fix this.",
+      data: { name, generics, expectedCount, actualCount, nodeType }
     });
   }
 }
@@ -84,13 +81,23 @@ const rules = {
         warnOnce();
         return {};
       }
-
+      const expectedCountMap = createExpectedCountMap(context.options[0]);
       return {
         NewExpression: (node) => {
-          assertThatNodeHasExpectedGenerics(context, node, "Constructor");
+          assertThatNodeHasExpectedGenerics({
+            context,
+            node,
+            expectedCountMap,
+            nodeType: "Constructor"
+          });
         },
         CallExpression(node) {
-          assertThatNodeHasExpectedGenerics(context, node, "Function");
+          assertThatNodeHasExpectedGenerics({
+            context,
+            node,
+            expectedCountMap,
+            nodeType: "Function"
+          });
         }
       };
     },
