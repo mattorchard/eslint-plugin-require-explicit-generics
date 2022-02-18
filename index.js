@@ -3,8 +3,8 @@ let hasWarned = false;
 
 function warnOnce() {
   if (!hasWarned) {
-    console.warn('require-explicit-generics was not passed any function names to check');
-    console.warn('Pass an array of function names or a map of names to expected counts in your .eslintrc.json');
+    console.warn('require-explicit-generics was not passed any function or constructor names to check');
+    console.warn('Pass an array of function and constructor names or a map of names to expected counts in your .eslintrc.json');
     console.warn('For more details visit: ' + PACKAGE_URL)
     hasWarned = true;
   }

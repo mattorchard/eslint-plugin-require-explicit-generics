@@ -4,7 +4,7 @@ Allow configured functions to require explicit generics.
 ## Why?
 Some libraries are over-permissive with their types, allowing generics to be omitted defaulting them to the `any` type.
 To prevent accidentally relying on this behaviour:
-this plugin allows you to specify a list of functions that **MUST** have explicit generics set.
+this plugin allows you to specify a list of functions and constructors that **MUST** have explicit generics set.
 
 ## Example
 If you list `myFunction` in your `.eslintrc.js`:
