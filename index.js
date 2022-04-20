@@ -43,21 +43,45 @@ function getExampleGenerics(count) {
   return values.join(", ");
 }
 
+function getCalleeNames(node) {
+  if (node.callee.name) {
+    return [node.callee.name];
+  }
+  if (("object" in node.callee) && ("property" in node.callee)) {
+    const objectName = node.callee.object.name || "";
+    const propertyName = node.callee.property.name || "";
+    return [
+      objectName + "." + propertyName,
+      "*." + propertyName,
+      propertyName
+    ];
+  }
+  return [];
+}
+
 function assertThatNodeHasExpectedGenerics({ context, expectedCountMap, node, nodeType }) {
-  const name = node.callee.name;
-  const expectedCount = expectedCountMap[name];
+  const possibleNames = getCalleeNames(node);
+  const matchingRuleName = possibleNames.find(possibleName => expectedCountMap[possibleName]);
+  const expectedCount = expectedCountMap[matchingRuleName];
   if (!expectedCount) return;
 
   const actualCount = getParamsLength(node.typeParameters) || getParamsLength(node.typeArguments) || 0;
 
-  const generics = getExampleGenerics(expectedCount);
+  const mostSpecificName = possibleNames[0];
+  const reportData = {
+    nodeType,
+    name: mostSpecificName,
+    generics: getExampleGenerics(expectedCount),
+    expectedCount,
+    actualCount,
+  };
   if (actualCount === 0) {
     context.report({
       node: node.callee,
       message:
         "{{nodeType}} '{{name}}' must be called with explicit generics. " +
         "Replace with '{{name}}<{{generics}}>(...)' to fix this.",
-      data: { name, generics, nodeType }
+      data: reportData
     });
   } else if (actualCount < expectedCount) {
     context.report({
@@ -66,7 +90,7 @@ function assertThatNodeHasExpectedGenerics({ context, expectedCountMap, node, no
         "{{nodeType}} '{{name}}' called with too few explicit generics. " +
         "Received {{actualCount}}, expected {{expectedCount}}. " +
         "Replace with '{{name}}<{{generics}}>(...)' to fix this.",
-      data: { name, generics, expectedCount, actualCount, nodeType }
+      data: reportData
     });
   }
 }
