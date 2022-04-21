@@ -53,10 +53,11 @@ You can also use a map to define how many generics to expect for each function.
 rules: {
   "require-explicit-generics/require-explicit-generics": [
     "error",
-    { "myFunction": 1, "myVar.myOtherFunction": 2 }
+    { "myFunction": 3, "myVar.myOtherFunction": 1 }
   ]
 },
 ```
 ```ts
+myVar.myOtherFunction(); // Function 'myVar.myOtherFunction' must be called with generics...
 myFunction<TypeA>(); // Function 'myOtherFunction' called with too few explicit generics...
 ```
