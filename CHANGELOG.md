@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.4.0
+- Added support for  
+
 ## 0.3.0
 - Added support for checking constructors
 

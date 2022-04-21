@@ -44,7 +44,7 @@ rules: {
   "require-explicit-generics/require-explicit-generics": [
     "error",
     // List your functions here
-    [ "myFunction", "myOtherFunction" ]
+    [ "myFunction", "myVar.myOtherFunction" ]
   ]
 },
 ```
@@ -53,10 +53,10 @@ You can also use a map to define how many generics to expect for each function.
 rules: {
   "require-explicit-generics/require-explicit-generics": [
     "error",
-    { "myFunction": 1, "myOtherFunction": 2 }
+    { "myFunction": 1, "myVar.myOtherFunction": 2 }
   ]
 },
 ```
 ```ts
-myOtherFunction<TypeA>(); // Function 'myOtherFunction' called with too few explicit generics...
+myFunction<TypeA>(); // Function 'myOtherFunction' called with too few explicit generics...
 ```
