@@ -11,12 +11,15 @@ function warnOnce() {
 }
 
 function createExpectedCountMap(countMapOrNameList) {
-  if (!Array.isArray(countMapOrNameList)) {
-    return countMapOrNameList;
-  }
-  const expectedCountMap = {};
-  for (const functionName of countMapOrNameList) {
-    expectedCountMap[functionName] = 1;
+  const expectedCountMap = new Map();
+  if (Array.isArray(countMapOrNameList)) {
+    countMapOrNameList.forEach(functionName =>
+      expectedCountMap.set(functionName, 1)
+    );
+  } else {
+    Object.entries(countMapOrNameList).forEach(([key, value]) =>
+      expectedCountMap.set(key, value)
+    );
   }
   return expectedCountMap;
 }
@@ -61,8 +64,9 @@ function getCalleeNames(node) {
 
 function assertThatNodeHasExpectedGenerics({ context, expectedCountMap, node, nodeType }) {
   const possibleNames = getCalleeNames(node);
-  const matchingRuleName = possibleNames.find(possibleName => expectedCountMap[possibleName]);
-  const expectedCount = expectedCountMap[matchingRuleName];
+  const matchingRuleName = possibleNames.find(possibleName => expectedCountMap.has(possibleName));
+  if (!matchingRuleName) return;
+  const expectedCount = expectedCountMap.get(matchingRuleName);
   if (!expectedCount) return;
 
   const actualCount = getParamsLength(node.typeParameters) || getParamsLength(node.typeArguments) || 0;

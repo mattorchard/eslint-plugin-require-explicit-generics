@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.4.2
+- Fixes false positives from object prototype fields
+
 ## 0.4.1
 - Readme and copy updates
 
