@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.0.0
+- Adds Options Schema to validate options passed in eslint config
+
 ## 0.4.2
 - Fixes false positives from object prototype fields
 
@@ -7,7 +10,7 @@
 - Readme and copy updates
 
 ## 0.4.0
-- Added support for function calls on member expressions  
+- Added support for function calls on member expressions
 
 ## 0.3.0
 - Added support for checking constructors

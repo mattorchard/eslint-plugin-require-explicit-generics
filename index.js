@@ -102,7 +102,24 @@ function assertThatNodeHasExpectedGenerics({ context, expectedCountMap, node, no
 const rules = {
   "require-explicit-generics": {
     meta: {
-      type: "problem"
+      type: "problem",
+      schema: [{
+        oneOf: [
+          {
+            type: "array",
+            items: { type: "string" },
+            uniqueItems: true,
+            minItems: 1
+          },
+          {
+            type: "object",
+            additionalProperties: {
+              type: "integer",
+              minimum: 1
+            }
+          }
+        ]
+      }]
     },
     create: function (context) {
       if (context.options.length === 0) {
